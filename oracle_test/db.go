@@ -56,6 +56,10 @@ func main() {
 	for rows.Next() {
 		rows.Scan(&name)
 	}
-	fmt.Printf("The person who matches the given ID: %s\n", name)
+	if name != "" {
+		fmt.Printf("The person who matches the given ID: %s\n", name)
+	} else {
+		fmt.Printf("No person found for the given id: %s", text)
+	}
 
 }

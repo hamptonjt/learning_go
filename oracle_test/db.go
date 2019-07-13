@@ -36,15 +36,15 @@ func main() {
 	// Need the \r for windows.. *nix only needs to replace the \n
 	text = strings.Replace(text, "\r\n", "", -1)
 
-	query := fmt.Sprintf(`
+	query := `
 		select spriden_first_name || ' ' || spriden_last_name 
 		from spriden 
 		where spriden_change_ind is null
-		  and spriden_id = '%s'
-	`, text)
+		  and spriden_id = :1
+	`
 
 	// Fetch a record from Banner.
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, text)
 	if err != nil {
 		fmt.Println("Error running query")
 		fmt.Println(err)

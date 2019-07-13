@@ -31,35 +31,33 @@ func main() {
 	// Get User input for a Banner ID to return their name:
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Please Enter a Banner ID: ")
-	text, _ := reader.ReadString('\n')
+	id, _ := reader.ReadString('\n')
 
 	// Need the \r for windows.. *nix only needs to replace the \n
-	text = strings.Replace(text, "\r\n", "", -1)
+	id = strings.Replace(id, "\r\n", "", -1)
 
 	query := `
 		select spriden_first_name || ' ' || spriden_last_name 
 		from spriden 
 		where spriden_change_ind is null
-		  and spriden_id = :1
+		  and spriden_id = :id
 	`
 
 	// Fetch a record from Banner.
-	rows, err := db.Query(query, text)
+	row := db.QueryRow(query, id)
 	if err != nil {
 		fmt.Println("Error running query")
 		fmt.Println(err)
 		return
 	}
-	defer rows.Close()
 
 	var name string
-	for rows.Next() {
-		rows.Scan(&name)
-	}
+	row.Scan(&name)
+
 	if name != "" {
 		fmt.Printf("The person who matches the given ID: %s\n", name)
 	} else {
-		fmt.Printf("No person found for the given id: %s", text)
+		fmt.Printf("No person found for the given id: %s", id)
 	}
 
 }

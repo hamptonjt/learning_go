@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"database/sql"
 	"log"
-	// goracle "gopkg.in/goracle.v2"
+	// importing goracle - not by name
+	_ "gopkg.in/goracle.v2"
 )
 
 // OpenConnection returns a connection to the database using the passed in credentials
@@ -27,17 +28,14 @@ func OpenConnection(oraSid, username, passwd string) *sql.DB {
 // CheckRole validates the user has access to the given Banner Object/Job
 func CheckRole(conn *sql.DB, obj string) bool {
 	secure := false
+	role := ""
 
-	rows, err := conn.Query("select get_banner_role(:obj, :version, :seed1, :seed3) from dual", obj, "", "12345678", "87651234")
+	_, err := conn.Exec("begin :res := get_banner_role(:obj, :version, :seed1, :seed3); end;", sql.Out{Dest: &role}, obj, "", "12345678", "87651234")
 	if err != nil {
 		fmt.Println("Error executing 'get_banner_role' function")
 		fmt.Println(err)
 		return secure
 	}
-	role := ""
-	rows.Scan(&role)
-
-	fmt.Printf("result of function: %s", role)
 
 	if role == "INSECURED" {
 		secure = false
@@ -46,7 +44,7 @@ func CheckRole(conn *sql.DB, obj string) bool {
 	}
 
 	if secure {
-		_, err := conn.Exec("dbms_session.set_role(:role)", role)
+		_, err := conn.Exec("begin dbms_session.set_role(:role); end;", role)
 		if err != nil {
 			fmt.Println("Error setting role for job")
 			fmt.Println(err)

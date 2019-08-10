@@ -51,10 +51,10 @@ func getData(conn *sql.DB, homeDir, oneUp string) {
 
 	for rows.Next() {
 		var id, fname, lname, mi, email, role string
-		// var values []string
-		// rows.Scan(&values)
+
 		rows.Scan(&id, &fname, &lname, &mi, &email, &role)
 		values := []string {id, fname, lname, mi, email, role}
+
 		csvWriter.Write(values)
 		csvWriter.Flush()
 		lisWriter.Write(values)
@@ -65,6 +65,7 @@ func getData(conn *sql.DB, homeDir, oneUp string) {
 }
 
 func main() {
+	// jobName := os.Args[0]
 	username := os.Args[1]
 	passwd := os.Args[2]
 	oneUp := os.Args[3]

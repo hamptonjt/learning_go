@@ -8,6 +8,12 @@ import (
 	_ "gopkg.in/goracle.v2"
 )
 
+// JobSubParam stucture hold the parameter number and value stored in GJBPRUN
+type JobSubParam struct {
+	ParmNum string
+	ParmVal string
+}
+
 // OpenConnection returns a connection to the database using the passed in credentials
 func OpenConnection(oraSid, username, passwd string) *sql.DB {
 	connectionStr := ""
@@ -55,8 +61,8 @@ func CheckRole(conn *sql.DB, obj string) bool {
 }
 
 // GetJobSubParams returns an array of job Number/Value pairs
-func GetJobSubParams (conn *sql.DB, jobName, oneUp string) map[string] string {
-	var params map[string] string
+func GetJobSubParams (conn *sql.DB, jobName, oneUp string) []JobSubParam {
+	var params []JobSubParam
 
 	rows, err := conn.Query(`
 		select distinct gjbprun_number, gjbprun_value
@@ -69,6 +75,7 @@ func GetJobSubParams (conn *sql.DB, jobName, oneUp string) map[string] string {
 		fmt.Println("Error fetching job submission parameters")
 		fmt.Println(err)
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var num, val string
@@ -76,7 +83,11 @@ func GetJobSubParams (conn *sql.DB, jobName, oneUp string) map[string] string {
 		if err != nil {
 			log.Fatal(err)
 		}
-		params[num] = val
+		params = append(params, JobSubParam{ParmNum: num, ParmVal: val})
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return params

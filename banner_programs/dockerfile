@@ -9,5 +9,5 @@ ENV PATH=/usr/local/go/bin:$GOPATH/bin:$PATH
 RUN go get gopkg.in/goracle.v2
 RUN go get github.com/hamptonjt/learning_go/banner_programs/asucommon
 WORKDIR /go/src/github.com/hamptonjt/learning_go/banner_programs
-# RUN go build -o azgaorp/azgaorp azgaorp/.
-# RUN go build -o rzidlfr/rzidlfr rzidlfr/.
+RUN yum -y install vim
+# RUN cd azgaorp && go build -o azgaorp . && cd ../rzidlfr && go build -o rzidlfr .

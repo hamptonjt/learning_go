@@ -19,7 +19,7 @@ func OpenConnection(oraSid, username, passwd string) *sql.DB {
 	connectionStr := ""
 
 	if username[:1] == "[" {
-		connectionStr = fmt.Sprintf("%s%s", username, passwd)
+		connectionStr = fmt.Sprintf("%s@//%s", username, passwd[1:])
 	} else {
 		connectionStr = fmt.Sprintf("%s/%s@%s", username, passwd, oraSid)
 	}

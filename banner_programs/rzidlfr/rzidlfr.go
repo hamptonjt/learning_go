@@ -20,18 +20,23 @@ func runProcess(conn *sql.DB, homeDir, oneUp string, params []asucommon.JobSubPa
 		fmt.Println(err)
 	}
 
-	for i:=0; i< len(params); i++ {
+	for i := 0; i < len(params); i++ {
 		param := params[i]
 		if param.ParmNum == "01" {
 			aidy = param.ParmVal
 		}
 		if param.ParmNum == "02" {
-			term= param.ParmVal
+			term = param.ParmVal
 		}
 	}
 
-	_, err = conn.Exec("begin baninst1.rzidlfr_calc(:1, :2, :3, :4, :5, :6); end;", aidy, term, 
-			sql.Out{Dest: &ttlUndergrad}, sql.Out{Dest: &ttlParent}, sql.Out{Dest: &ttlGrad}, sql.Out{Dest: &grandTotal})
+	_, err = conn.Exec("begin baninst1.rzidlfr_calc(:1, :2, :3, :4, :5, :6); end;", aidy, term,
+		sql.Out{Dest: &ttlUndergrad}, sql.Out{Dest: &ttlParent}, sql.Out{Dest: &ttlGrad}, sql.Out{Dest: &grandTotal})
+
+	if err != nil {
+		fmt.Println("Error calling rzidlfr_calc")
+		fmt.Println(err)
+	}
 
 	fmt.Println("")
 	fmt.Printf("Total Undergraduate: %.2f\n", ttlUndergrad)
@@ -69,4 +74,3 @@ func main() {
 
 	fmt.Printf("Execution Completed at %s\n", time.Now().Format(time.RFC3339))
 }
-
